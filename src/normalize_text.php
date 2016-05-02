@@ -14,9 +14,9 @@ class normalize_text
     public $need_append_word = true;
     public $replace_character = 'z';
     public $default_lang = 'rus';
-    public $replace_pattern = '/&[a-zA-Z]{1,10};/';
-    public $split_pattern = '#\s|[,.:;!?"\'()«»“„]#isu';
-    public $replace_words_pattern = '/^&.*;$/';
+    public $replace_pattern = '/&[a-zA-Z]{1,10};/u';
+    public $split_pattern = '#\s|[,.:;!?"\'()«»“„]#u';
+    public $replace_words_pattern = '/^&.*;$/u';
 
     public $opts = array(
         'storage' => PHPMORPHY_STORAGE_FILE,
@@ -32,7 +32,7 @@ class normalize_text
         $opts = isset($params['opts']) ? $params['opts'] : $this->opts;
         $lang = isset($params['lang']) ? $params['langs'] : $this->default_lang;
 
-        $dict_dir = $this->get_dict_dir($lang);
+        $dict_dir = isset($params['dict_dir']) ? $params['dict_dir'] : $this->get_dict_dir($lang);
 
         $dict_bundle = new phpMorphy_FilesBundle($dict_dir, $lang);
         $this->phpmorphy = new phpMorphy($dict_bundle, $opts);
@@ -159,7 +159,7 @@ class normalize_text
         {
             for($i=$this->min_word_len; $i<$this->db_min_word_len; $i++)
             {
-                $replace_pattern[] = '/(^| )(.{'.$i.'})($| )/';
+                $replace_pattern[] = '/(^| )([^\s]{'.$i.'})($| )/u';
                 $result_pattern[] = '$1$2'.str_pad('', $this->db_min_word_len-$i, $this->replace_character).'$3';
             }
         }
